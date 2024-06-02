@@ -4,11 +4,12 @@ from matplotlib.animation import FuncAnimation
 
 # Set up the figure and axis
 fig, ax = plt.subplots()
-ax.set_xlim(0, 4 * np.pi)
-ax.set_ylim(-1, 1)
+ax.set_xlim(-5, 5)
+ax.set_ylim(-5, 5)
 
 # Generate the x data (time values)
-x = np.linspace(0, 4 * np.pi, 1000)
+x = np.append(np.linspace(-3, -3, 15), [np.linspace(-3, 3, 15), np.linspace(3, 3, 15), np.linspace(3, -3, 15)])
+y_values =  np.append(np.linspace(-3, 3, 15), [np.linspace(3, 3, 15), np.linspace(3, -3, 15), np.linspace(-3, -3, 15)])
 # Initialize an empty line object to update during animation
 line, = ax.plot([], [], lw=2)
 
@@ -20,7 +21,7 @@ def init():
 # Update the plot data
 def update(frame):
     # Update the line data with the sine of the current frame
-    y = np.sin(x[:frame])
+    y = y_values[:frame]
     line.set_data(x[:frame], y)
     return line,
 
