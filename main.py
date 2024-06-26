@@ -73,8 +73,14 @@ ax1.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 ax1.axis('off')
 ax1.set_title('Original Image')
 
-ax2.set_xlim(min_x, max_x)
-ax2.set_ylim(min_y, max_y)
+if max_x > max_y:
+    max_y = max_x
+    min_y = min_x
+else:
+    max_x = max_y
+    min_x = min_y
+ax2.set_xlim(min_x*1.5, max_x*1.5)
+ax2.set_ylim(min_y*1.5, max_y*1.5)
 ax2.set_title(f'Fourier Drawing: {numOfVectors} vectors')
 
 #Apply integrals to find coefficients
