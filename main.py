@@ -6,7 +6,7 @@ import sympy as sp
 
 plt.switch_backend('TkAgg')
 
-numOfVectors = 400 #will determine accuracy, should be even
+numOfVectors = 80 #will determine accuracy, should be even
 vectorsFromZero = (numOfVectors) // 2
 coefs = []
 finalPoints = []
@@ -32,7 +32,7 @@ def seriesAtVal(t):
 
 # Step 1: Define the vertices of the square
 # Load the image
-image_path = 'img.png'
+image_path = 'img_1.png'
 image = cv2.imread(image_path)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -67,9 +67,15 @@ max_x -= x_range
 max_y -= y_range
 
 # Set up the figure and axis
-fig, ax = plt.subplots()
-ax.set_xlim(min_x, max_x)
-ax.set_ylim(min_y, max_y)
+# Set up the figure and subplots
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+ax1.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+ax1.axis('off')
+ax1.set_title('Original Image')
+
+ax2.set_xlim(min_x, max_x)
+ax2.set_ylim(min_y, max_y)
+ax2.set_title(f'Fourier Drawing: {numOfVectors} vectors')
 
 #Apply integrals to find coefficients
 for k in range(-vectorsFromZero, vectorsFromZero + 1):
@@ -86,10 +92,10 @@ real_parts = [c.real for c in finalPoints]
 imaginary_parts = [c.imag for c in finalPoints]
 
 # Initialize an empty line object to update during animation
-line, = ax.plot([], [], lw=2)
+line, = ax2.plot([], [], lw=2)
 
 # Create line objects for each vector
-vectors = [ax.plot([], [], lw=1, color='blue')[0] for _ in range(numOfVectors+1)]
+vectors = [ax2.plot([], [], lw=1, color='blue')[0] for _ in range(numOfVectors+1)]
 
 # Initialize the plot data
 def init():
