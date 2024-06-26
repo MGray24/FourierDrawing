@@ -5,8 +5,8 @@ import sympy as sp
 
 plt.switch_backend('TkAgg')
 
-numOfVectors = 41 #will determine accuracy, should be odd
-vectorsFromZero = (numOfVectors - 1) // 2
+numOfVectors = 40 #will determine accuracy, should be even
+vectorsFromZero = (numOfVectors) // 2
 coefs = []
 finalPoints = []
 # Function to apply the complex exponential
@@ -24,7 +24,8 @@ def integrate(k, dx):
 def seriesAtVal(t):
     total = 0
     for i in range(-vectorsFromZero, vectorsFromZero+1):
-        total += coefs[i+vectorsFromZero] * np.e ** (2j * np.pi * t * i)
+        if i != 0: #removes the constant vector
+            total += coefs[i+vectorsFromZero] * np.e ** (2j * np.pi * t * i)
     return total
 
 # Set up the figure and axis
@@ -78,7 +79,7 @@ imaginary_parts = [c.imag for c in finalPoints]
 line, = ax.plot([], [], lw=2)
 
 # Create line objects for each vector
-vectors = [ax.plot([], [], lw=1, color='blue')[0] for _ in range(numOfVectors)]
+vectors = [ax.plot([], [], lw=1, color='blue')[0] for _ in range(numOfVectors+1)]
 
 # Initialize the plot data
 def init():
@@ -100,9 +101,11 @@ def update(frame):
     t = frame / len(real_parts)
     current_pos = 0
     for i, k in enumerate(range(-vectorsFromZero, vectorsFromZero + 1)):
-        vector_end = current_pos + coefs[i] * np.e ** (2j * np.pi * t * k)
-        vectors[i].set_data([current_pos.real, vector_end.real], [current_pos.imag, vector_end.imag])
-        current_pos = vector_end
+        if k != 0:
+            vector_end = current_pos + coefs[i] * np.e ** (2j * np.pi * t * k)
+            vectors[i].set_data([current_pos.real, vector_end.real], [current_pos.imag, vector_end.imag])
+            current_pos = vector_end
+
 
     return [line] + vectors
     ###
