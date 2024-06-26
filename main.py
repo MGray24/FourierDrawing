@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import sympy as sp
 
-
+numOfVectors = 41 #will determine accuracy, should be odd
+vectorsFromZero = (numOfVectors - 1) // 2
 coefs = []
 finalPoints = []
 # Function to apply the complex exponential
@@ -20,8 +21,8 @@ def integrate(k, dx):
 
 def seriesAtVal(t):
     total = 0
-    for i in range(-10, 11):
-        total += coefs[i+10] * (np.e) ** (2j * np.pi * t * i)
+    for i in range(-vectorsFromZero, vectorsFromZero+1):
+        total += coefs[i+vectorsFromZero] * np.e ** (2j * np.pi * t * i)
     return total
 
 # Set up the figure and axis
@@ -44,12 +45,12 @@ side4 = np.linspace(vertex4, vertex1, 100)
 # Step 3: Combine all points
 shape_points = np.concatenate([side1, side2, side3, side4])
 
-# Apply the function to the square points
-for k in range(-10, 11):
+#Apply integrals to find coefficients
+for k in range(-vectorsFromZero, vectorsFromZero + 1):
     coef = integrate(k, .01)
     coefs.append(coef)
 
-#print(coefs)
+#use the coefficients to generate points for the drawing
 t = 0
 for i in range(100):
     finalPoints.append(seriesAtVal(t))
@@ -57,8 +58,7 @@ for i in range(100):
 
 real_parts = [c.real for c in finalPoints]
 imaginary_parts = [c.imag for c in finalPoints]
-print(finalPoints)
-#print(real_parts)
+
 # Initialize an empty line object to update during animation
 line, = ax.plot([], [], lw=2)
 
