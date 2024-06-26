@@ -1,17 +1,18 @@
 import numpy as np
+import cv2
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import sympy as sp
 
 plt.switch_backend('TkAgg')
 
-numOfVectors = 40 #will determine accuracy, should be even
+numOfVectors = 400 #will determine accuracy, should be even
 vectorsFromZero = (numOfVectors) // 2
 coefs = []
 finalPoints = []
 # Function to apply the complex exponential
 def f(x):
-    return shape_points[int(1000*x)]
+    return points[int(len(points)*x)]
 def integrate(k, dx):
     amount = int(1/dx)
     x = 0
@@ -28,38 +29,47 @@ def seriesAtVal(t):
             total += coefs[i+vectorsFromZero] * np.e ** (2j * np.pi * t * i)
     return total
 
-# Set up the figure and axis
-fig, ax = plt.subplots()
-ax.set_xlim(-5, 5)
-ax.set_ylim(-5, 5)
 
 # Step 1: Define the vertices of the square
-vertex1 = .5 + -2.4899j
-vertex2 = .809 + -1.5388j
-vertex3 = 0 + -.9511j
-vertex4 = 1 + -.9511j
-vertex5 = 1.309 + 0j
-vertex6 = 1.618 + -.9511j
-vertex7 = 2.618 + -.9511j
-vertex8 = 1.809 + -1.5388j
-vertex9 = 2.118 + -2.4899j
-vertex10 = 1.309 + -1.9021j
+# Load the image
+image_path = 'img.png'
+image = cv2.imread(image_path)
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# Step 2: Generate 100 points per side
-side1 = np.linspace(vertex1, vertex2, 100)
-side2 = np.linspace(vertex2, vertex3, 100)
-side3 = np.linspace(vertex3, vertex4, 100)
-side4 = np.linspace(vertex4, vertex5, 100)
-side5 = np.linspace(vertex5, vertex6, 100)
-side6 = np.linspace(vertex6, vertex7, 100)
-side7 = np.linspace(vertex7, vertex8, 100)
-side8 = np.linspace(vertex8, vertex9, 100)
-side9 = np.linspace(vertex9, vertex10, 100)
-side10 = np.linspace(vertex10, vertex1, 100)
+# Apply edge detection
+edges = cv2.Canny(gray, threshold1=50, threshold2=150)
+
+# Find contours
+contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# Extract the points from the contours
+points = []
+for contour in contours:
+    for point in contour:
+        points.append(tuple(point[0]))  # point is a list containing the [x, y] coordinates
 
 
-# Step 3: Combine all points
-shape_points = np.concatenate([side1, side2, side3, side4, side5, side6, side7, side8, side9, side10])
+# Convert to numpy array for easier manipulation if needed
+points = np.array(points)
+points = [complex(x, -y) for x, y in points]
+
+real_parts = [z.real for z in points]
+imaginary_parts = [z.imag for z in points]
+min_x, max_x = min(real_parts), max(real_parts)
+min_y, max_y = min(imaginary_parts), max(imaginary_parts)
+
+x_range = (max_x+min_x)/2
+y_range = (max_y+min_y)/2
+points = [point - x_range - y_range for point in points]
+min_x -= x_range
+min_y -= y_range
+max_x -= x_range
+max_y -= y_range
+
+# Set up the figure and axis
+fig, ax = plt.subplots()
+ax.set_xlim(min_x, max_x)
+ax.set_ylim(min_y, max_y)
 
 #Apply integrals to find coefficients
 for k in range(-vectorsFromZero, vectorsFromZero + 1):
@@ -111,7 +121,7 @@ def update(frame):
     ###
 
 # Create the animation
-ani = FuncAnimation(fig, update, frames=len(real_parts), init_func=init, blit=True, interval=20)
+ani = FuncAnimation(fig, update, frames=len(real_parts), init_func=init, blit=True, interval=60)
 
 # Show the plot
 plt.show()
