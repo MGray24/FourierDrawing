@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import sympy as sp
 
+plt.switch_backend('TkAgg')
+
 numOfVectors = 41 #will determine accuracy, should be odd
 vectorsFromZero = (numOfVectors - 1) // 2
 coefs = []
@@ -62,10 +64,17 @@ imaginary_parts = [c.imag for c in finalPoints]
 # Initialize an empty line object to update during animation
 line, = ax.plot([], [], lw=2)
 
+# Create line objects for each vector
+vectors = [ax.plot([], [], lw=1, color='blue')[0] for _ in range(numOfVectors)]
+
 # Initialize the plot data
 def init():
     line.set_data([], [])
-    return line,
+    ###
+    for vector in vectors:
+        vector.set_data([], [])
+    return [line] + vectors
+    ###
 
 # Update the plot data
 def update(frame):
@@ -73,10 +82,20 @@ def update(frame):
     x = real_parts[:frame]
     y = imaginary_parts[:frame]
     line.set_data(x, y)
-    return line,
+
+    ### Calculate the current position of each vector
+    t = frame / len(real_parts)
+    current_pos = 0
+    for i, k in enumerate(range(-vectorsFromZero, vectorsFromZero + 1)):
+        vector_end = current_pos + coefs[i] * np.e ** (2j * np.pi * t * k)
+        vectors[i].set_data([current_pos.real, vector_end.real], [current_pos.imag, vector_end.imag])
+        current_pos = vector_end
+
+    return [line] + vectors
+    ###
 
 # Create the animation
-ani = FuncAnimation(fig, update, frames=len(real_parts), init_func=init, blit=True, interval=10)
+ani = FuncAnimation(fig, update, frames=len(real_parts), init_func=init, blit=True, interval=20)
 
 # Show the plot
 plt.show()
