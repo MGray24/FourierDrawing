@@ -11,7 +11,7 @@ coefs = []
 finalPoints = []
 # Function to apply the complex exponential
 def f(x):
-    return shape_points[int(400*x)]
+    return shape_points[int(1000*x)]
 def integrate(k, dx):
     amount = int(1/dx)
     x = 0
@@ -33,19 +33,32 @@ ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 5)
 
 # Step 1: Define the vertices of the square
-vertex1 = -2 + -2j
-vertex2 = -2 + 2j
-vertex3 = 2 + 2j
-vertex4 = 2 + -2j
+vertex1 = .5 + -2.4899j
+vertex2 = .809 + -1.5388j
+vertex3 = 0 + -.9511j
+vertex4 = 1 + -.9511j
+vertex5 = 1.309 + 0j
+vertex6 = 1.618 + -.9511j
+vertex7 = 2.618 + -.9511j
+vertex8 = 1.809 + -1.5388j
+vertex9 = 2.118 + -2.4899j
+vertex10 = 1.309 + -1.9021j
 
 # Step 2: Generate 100 points per side
 side1 = np.linspace(vertex1, vertex2, 100)
 side2 = np.linspace(vertex2, vertex3, 100)
 side3 = np.linspace(vertex3, vertex4, 100)
-side4 = np.linspace(vertex4, vertex1, 100)
+side4 = np.linspace(vertex4, vertex5, 100)
+side5 = np.linspace(vertex5, vertex6, 100)
+side6 = np.linspace(vertex6, vertex7, 100)
+side7 = np.linspace(vertex7, vertex8, 100)
+side8 = np.linspace(vertex8, vertex9, 100)
+side9 = np.linspace(vertex9, vertex10, 100)
+side10 = np.linspace(vertex10, vertex1, 100)
+
 
 # Step 3: Combine all points
-shape_points = np.concatenate([side1, side2, side3, side4])
+shape_points = np.concatenate([side1, side2, side3, side4, side5, side6, side7, side8, side9, side10])
 
 #Apply integrals to find coefficients
 for k in range(-vectorsFromZero, vectorsFromZero + 1):
